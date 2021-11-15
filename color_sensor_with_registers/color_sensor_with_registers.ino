@@ -9,7 +9,11 @@
  *  28OCT2019 
  *  Last edited: 05NOV2020 
  */ 
- 
+
+ #define yLTHRESH 20
+ #define yUTHRESH 32
+ #define bLTHRESH 48
+ #define bUTHRESH 64
  
 //global variables 
 volatile int period; 
@@ -60,14 +64,18 @@ int main(void){
   while (1){ 
     getColor(); //get the color from the color sensor 
     //uncomment this if-else once you determine your thresholds for a specific color 
-    /*if (THRESHOLD1<period && period<THRESHOLD2) { //checks for some color 
+    if (yLTHRESH<period && period<yUTHRESH) { //checks for some color 
       //do something 
-      
+      Serial.println("Yellow");
+    }
+    else if (bLTHRESH<period && period<bUTHRESH) { //checks for some color 
+      //do something 
+      Serial.println("Blue");
     } 
     else { 
       //do something else 
       
-    }*/ 
+    }
     Serial.println(period); 
     _delay_ms(500); //check color every 500ms 
   } 
