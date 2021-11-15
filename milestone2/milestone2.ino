@@ -22,37 +22,48 @@ volatile int period;
 volatile int timer1; 
 volatile int color;
 
-int main(void){ 
-  initColor();
+ISR(PCINT2_vect) { //interrupt vector for PCINT2 
+  if (PIND & 0b10000000) { //if pin 7 (PD7) is high 
+    TCNT0=0; //reset timer 
+  } 
+  else { 
+    timer1=TCNT0; //store timer value in variable timer1 
+  } 
+} 
+
+int main(void){
   initMotors();
+  initColor();
+  sei();
   calibrateColor();
   
-  Serial.println("forward");
-  drive_backward();
-  _delay_ms(delay_time_1);
-  stop_robot();
-  Serial.println("right");
-  turn_right();
-  _delay_ms(delay_time_1);
-  stop_robot();
   bool homeside = true;
   while(1){
     checkColor();
     if(startcolor == color) {
+      initMotors()
       drive_forward();
       if(!homeside) {
         _delay_ms(100);
         stop_robot();
       }
     }
-    else if(startcolor != color) {
-      homeside = false;
-      drive_foward();
-      _delay_ms(100);
+    else if(color == 4) {
+      stop_robot();
       turn_right();
       _delay_ms(2*delay_time_2);
       drive_forward();
     }
+    else if(startcolor != color) {
+      homeside = false;
+      drive_foward();
+      _delay_ms(100);
+      stop_robot();
+      turn_right();
+      _delay_ms(2*delay_time_2);
+      drive_forward();
+    }
+    
   }
 }
 
@@ -90,15 +101,13 @@ void initColor(){
  
   //set up pin change interrupt on pin 7 (PCINT23) 
   PCICR=0b00000100; //enable PCINT2 (datasheet pg 92) 
-  sei(); //enable all interrupts 
  
   //set up timer 1 
-  TCCR1A=0b00000000; //set timer to normal mode (datasheet pg 171) 
-  TCCR1B=0b00000001; //set prescaler to 1 (datasheet pg 173) 
+  TCCR0A=0b00000000; //set timer to normal mode (datasheet pg 171) 
+  TCCR0B=0b00000001; //set prescaler to 1 (datasheet pg 173) 
 } 
 
 void initMotors() {
-    Serial.begin(9600);
   DDRD = 0b00001000;
   DDRB = 0b00001110;
   TCCR2A = 0b00100001; 
@@ -106,7 +115,7 @@ void initMotors() {
   //Right Motor
   TCCR1A = 0b00100001; 
   TCCR1B = 0b00000100;
-  sei();
+  
 }
 
 void getColor(){ 
