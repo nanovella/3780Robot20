@@ -5,7 +5,7 @@
 #define RFmotor 10
 #define RBmotor 9
 #define delaytime 20
-#define SPEED 100
+#define SPEED 80
 
 #define yLTHRESH 20
 #define yUTHRESH 32
@@ -35,10 +35,24 @@ int main(void){
   turn_right();
   _delay_ms(delay_time_1);
   stop_robot();
-
+  bool homeside = true;
   while(1){
     checkColor();
-    if(startcolor == color)
+    if(startcolor == color) {
+      drive_forward();
+      if(!homeside) {
+        _delay_ms(100);
+        stop_robot();
+      }
+    }
+    else if(startcolor != color) {
+      homeside = false;
+      drive_foward();
+      _delay_ms(100);
+      turn_right();
+      _delay_ms(2*delay_time_2);
+      drive_forward();
+    }
   }
 }
 
