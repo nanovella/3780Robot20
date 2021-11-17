@@ -1,9 +1,11 @@
 // ==================================================================
 //Constants
-#define LFmotor 6
-#define LBmotor 5
+#define LFmotor 11
+#define LBmotor 3
 #define RFmotor 10
 #define RBmotor 9
+#define QTIVpin 12;
+#define QTIOpin 13;
 #define delaytime 20
 #define SPEED 80
 
@@ -31,6 +33,12 @@ ISR(PCINT2_vect) { //interrupt vector for PCINT2
   } 
 } 
 
+ISR(PCINT3_vect) { //interrupt vector for PCINT2 
+  if (PIND & 0b00100000) { //if pin 13 (PD7) is high 
+    TCNT0=0; //reset timer 
+  }
+} 
+
 int main(void){
   initMotors();
   initColor();
@@ -39,6 +47,7 @@ int main(void){
   
   bool homeside = true;
   while(1){
+    checkBorder();
     checkColor();
     if(startcolor == color) {
       initMotors()
@@ -70,6 +79,10 @@ int main(void){
 // functions for certain robot behaviors
 // fill in the appropriate PORT registers
 // don't forget to use masking!
+void checkBorder() {
+  PORTD |= 0b00110000;
+}
+
 void calibrateColor() {
   getColor();
   if (yLTHRESH<period && period<yUTHRESH) { //checks for some color 

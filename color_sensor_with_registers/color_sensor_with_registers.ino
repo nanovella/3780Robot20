@@ -72,7 +72,7 @@ int main(void){
       //do something 
       Serial.println("Blue");
     } 
-    else { 
+    else if{ 
       //do something else 
       
     }
