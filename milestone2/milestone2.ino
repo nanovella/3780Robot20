@@ -23,6 +23,7 @@ int startcolor;
 volatile int period; 
 volatile int timer1; 
 volatile int color;
+volatile bool QT
 
 ISR(PCINT2_vect) { //interrupt vector for PCINT2 
   if (PIND & 0b10000000) { //if pin 7 (PD7) is high 
@@ -34,8 +35,8 @@ ISR(PCINT2_vect) { //interrupt vector for PCINT2
 } 
 
 ISR(PCINT3_vect) { //interrupt vector for PCINT2 
-  if (PIND & 0b00100000) { //if pin 13 (PD7) is high 
-    TCNT0=0; //reset timer 
+  if (PINB & 0b00100000) { //if pin 13 (PD7) is high 
+    QTblack = true;
   }
 } 
 
@@ -47,7 +48,6 @@ int main(void){
   
   bool homeside = true;
   while(1){
-    checkBorder();
     checkColor();
     if(startcolor == color) {
       initMotors()
@@ -74,13 +74,6 @@ int main(void){
     }
     
   }
-}
-
-// functions for certain robot behaviors
-// fill in the appropriate PORT registers
-// don't forget to use masking!
-void checkBorder() {
-  PORTD |= 0b00110000;
 }
 
 void calibrateColor() {
@@ -110,8 +103,7 @@ void checkColor() {
 
 void initColor(){ 
   //set up I/O for sensor 
-  DDRD=0b00000000; //set pin 7 (PD7) to input 
- 
+  DDRD |=0b00000000; //set pin 7 (PD7) to input 
   //set up pin change interrupt on pin 7 (PCINT23) 
   PCICR=0b00000100; //enable PCINT2 (datasheet pg 92) 
  
