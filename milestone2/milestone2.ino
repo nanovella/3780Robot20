@@ -4,8 +4,8 @@
 #define LBmotor 3
 #define RFmotor 10
 #define RBmotor 9
-#define QTIVpin 12;
-#define QTIOpin 13;
+#define QTIRpin 12
+#define QTILpin 13
 #define delaytime 20
 #define SPEED 80
 
@@ -19,11 +19,12 @@
 // Variables
 int delay_time_1 = 4000;
 int delay_time_2 = 2000;
+int border_delay = 100;
 int startcolor;
 volatile int period; 
 volatile int timer1; 
 volatile int color;
-volatile bool QT
+volatile bool QTI = false;
 
 ISR(PCINT2_vect) { //interrupt vector for PCINT2 
   if (PIND & 0b10000000) { //if pin 7 (PD7) is high 
@@ -34,9 +35,18 @@ ISR(PCINT2_vect) { //interrupt vector for PCINT2
   } 
 } 
 
-ISR(PCINT3_vect) { //interrupt vector for PCINT2 
-  if (PINB & 0b00100000) { //if pin 13 (PD7) is high 
-    QTblack = true;
+ISR(PCINT0_vect) { //interrupt vector for PCINT0
+  if (PINB & 0b00100000) { //if pin 13 (PB5) is high 
+    stop_robot();
+    turn_right();
+    _delay_ms(border_delay);
+    stop_robot();
+  }
+  else if (PINB & 0b00010000) { //if pin 12 (PB4) is high 
+    stop_robot();
+    turn_left();
+    _delay_ms(border_delay);
+    stop_robot();
   }
 } 
 
@@ -50,7 +60,6 @@ int main(void){
   while(1){
     checkColor();
     if(startcolor == color) {
-      initMotors()
       drive_forward();
       if(!homeside) {
         _delay_ms(100);
@@ -103,10 +112,11 @@ void checkColor() {
 
 void initColor(){ 
   //set up I/O for sensor 
-  DDRD |=0b00000000; //set pin 7 (PD7) to input 
+  DDRB &= 0b11001111; //set pin 13 (PB5) to input
+  DDRD &= 0b01111111; //set pin 13 (PB5) to input
   //set up pin change interrupt on pin 7 (PCINT23) 
-  PCICR=0b00000100; //enable PCINT2 (datasheet pg 92) 
- 
+  PCICR=0b00000101; //enable PCINT2 (datasheet pg 92) 
+  PCMSK0 |= 0b00110000;
   //set up timer 1 
   TCCR0A=0b00000000; //set timer to normal mode (datasheet pg 171) 
   TCCR0B=0b00000001; //set prescaler to 1 (datasheet pg 173) 
@@ -120,7 +130,6 @@ void initMotors() {
   //Right Motor
   TCCR1A = 0b00100001; 
   TCCR1B = 0b00000100;
-  
 }
 
 void getColor(){ 
