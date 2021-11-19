@@ -72,10 +72,6 @@ int main(void){
       //do something 
       Serial.println("Blue");
     } 
-    else if{ 
-      //do something else 
-      
-    }
     Serial.println(period); 
     _delay_ms(500); //check color every 500ms 
   } 

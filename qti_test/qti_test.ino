@@ -1,23 +1,18 @@
 
 #define QTIOpin 13; //PB5
 
-volatile bool QTI = fdals;
 
 ISR(PCINT0_vect) { //interrupt vector for PCINT0
   if (PINB & 0b00100000) { //if pin 13 (PB5) is high 
-    QTI = true;
+    Serial.println("border");
   }
 } 
 
 int main(void){
   initColor();
   sei();
-  
+  Serial.begin(9600);
   while(1){
-       if(QTI) {
-        Serial.println("border");
-       }
-       _delay_ms(50);
   }
 }
 
