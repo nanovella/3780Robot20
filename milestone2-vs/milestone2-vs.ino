@@ -120,10 +120,9 @@ void checkColor() {
 
 void initColor(){ 
   //set up I/O for sensor 
-  //DDRD &= 0b01111111; //set pin 13 (PB5) to input
+  DDRD &= 0b01111111; //set pin 17 to input
   //set up pin change interrupt on pin 7 (PCINT23) 
   PCICR=0b00000100; //enable PCINT2 (datasheet pg 92) 
-  //PCMSK0 |= 0b00110000;
   //set up timer 1 
   TCCR1A=0b00000000; //set timer to normal mode (datasheet pg 171) 
   TCCR1B=0b00000001; //set prescaler to 1 (datasheet pg 173) 
@@ -136,7 +135,7 @@ void initMotors() {
   TCCR2B = 0b10000110;
   //Right Motor
   TCCR0A = 0b10100001; 
-  TCCR0B = 0b00000001;
+  TCCR0B = 0b10000100;
 }
 
 void getColor(){ 
@@ -147,17 +146,12 @@ void getColor(){
 } 
 
 int drive_forward(void){
-  // change the value of OCR2B to change the PWM duty cycle
-  // this example will just oscillate between 0% (0) and 100% (255) duty cycle
-  // spin both wheels forward
       OCR2B = SPEED;
       OCR0B = SPEED;
  
 }
 
 int drive_backward(void){
-  // spin both wheels backward
-     
       OCR2A = SPEED;
       OCR0A = SPEED;
 }
@@ -177,7 +171,6 @@ int turn_left(void){
       OCR2B = SPEED;
       OCR0A = SPEED;
 }
-
 
 int stop_robot(void){
   // stop both wheels

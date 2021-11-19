@@ -25,14 +25,11 @@ int main(void){
   TCCR2B = 0b10000110;
   //Right Motor
   TCCR0A = 0b10100001; 
-  TCCR0B = 0b00000001;
+  TCCR0B = 0b10000100;
   sei();
-  // sequence for milestone 1
-  // call the functions in the correct order with delays either in between the function calls or in the
-  // functions themselves (see example code on Canvas for using functions).
-  // this example would have the robot drive forward for 1 second and then stop. 
+
   Serial.println("forward");
-  _delay_ms(3000);
+  _delay_ms(2000);
   drive_forward();
 //  _delay_ms(delay_time_1);
 //  
@@ -90,18 +87,9 @@ int main(void){
   }
 }
 
-// functions for certain robot behaviors
-// fill in the appropriate PORT registers
-// don't forget to use masking!
-
 int drive_forward(void){
-  // change the value of OCR2B to change the PWM duty cycle
-  // this example will just oscillate between 0% (0) and 100% (255) duty cycle
-  // spin both wheels forward
- 
       OCR2B = SPEED;
       OCR0B = SPEED;
- 
 }
 
 int drive_backward(void){
