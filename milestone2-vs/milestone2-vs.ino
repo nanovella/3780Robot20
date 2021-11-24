@@ -17,13 +17,14 @@
 #define eUTHRESH 190
 
 // Variables
-int delay_time_1 = 4000;
-int delay_time_2 = 2000;
+int 15deg = 800;
+int 3in = 1000;
 int border_delay = 100;
 
 int startcolor;
+int othercolor; 
 volatile int period; 
-volatile int timer1; 
+volatile int timer1;
 volatile int color;
 volatile bool QTI = false;
 
@@ -53,7 +54,7 @@ int main(void){
   sei();
   calibrateColor();
   Serial.begin(9600);
-  
+
   bool homeside = true;
   while(1){
     checkColor();
@@ -61,6 +62,7 @@ int main(void){
     Serial.println(startcolor);
     if(startcolor == color) {
       drive_forward();
+      if(!homeside) stop_robot();
     }
     else if(color == 4) {
       Serial.println("black");
@@ -73,7 +75,7 @@ int main(void){
       }
       drive_forward();
     }
-    else if(startcolor == 3) {
+    else if(othercolor == color) {
       homeside = false;
       _delay_ms(500);
       stop_robot();
@@ -89,13 +91,14 @@ void calibrateColor() {
   getColor();
   if (yLTHRESH<period && period<yUTHRESH) { //checks for some color 
     startcolor = 2;
+    othercolor = 3;
   }
   else if (bLTHRESH<period && period<bUTHRESH) { //checks for some color 
     startcolor = 3;
+    othercolor = 2;
   }
   else if (eLTHRESH<period && period<eUTHRESH) { //checks for some color 
     startcolor = 4;
-    
   }  
 }
 
