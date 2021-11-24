@@ -19,13 +19,12 @@ int main(void){
   // use the DDR registers to set the appropriate pins as outputs
   // Left Motor
   //Serial.begin(9600);
-  DDRD = 0b01101000; // Forward Pins
+  DDRD = 0b01100000; // Forward Pins
   DDRB = 0b00001100; // Backwards Pins
-  TCCR2A = 0b10110001; 
-  TCCR2B = 0b00000001;
+
   //Right Motor
-  TCCR0A = 0b10110001; 
-  TCCR0B = 0b00000001;
+  TCCR0A = 0b10100001; 
+  TCCR0B = 0b10000100;
 
   //Serial.println("forward");
   //_delay_ms(2000);
@@ -41,10 +40,9 @@ int main(void){
 }
 
 int drive_forward(void){
-      OCR0A = 0; 
-      OCR0B = 0; 
-      OCR2A = 0; 
-      OCR2B = 0; 
+
+      OCR0A = 128; 
+      OCR0B = 128; 
 }
 
 int drive_backward(void){
