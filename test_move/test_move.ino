@@ -6,8 +6,8 @@
 #define RBmotor 9
 #define QTIRpin 12
 #define QTILpin 13
+#define delaytime 20
 #define SPEED 80
-#define deg9 75
 
 #define yLTHRESH 16
 #define yUTHRESH 29
@@ -17,13 +17,16 @@
 #define eUTHRESH 190
 
 // Variables
+//int 15deg = 800;
+//int 3in = 1000;
+int border_delay = 100;
+
 int startcolor;
 int othercolor; 
 volatile int period; 
 volatile int timer1;
 volatile int color;
 volatile bool QTI = false;
-volatile int stepp = 1;
 
 ISR(PCINT2_vect) { //interrupt vector for PCINT2 
   if (PIND & 0b10000000) { //if pin 7 (PD7) is high 
@@ -32,6 +35,19 @@ ISR(PCINT2_vect) { //interrupt vector for PCINT2
   else { 
     timer1=TCNT1; //store timer value in variable timer1 
   } 
+} 
+
+ISR(PCINT0_vect) { //interrupt vector for PCINT0
+  if (PINB & 0b00100000) { //if pin 13 (PB5) is high 
+    turn_left();
+    _delay_ms(300);
+    drive_forward();
+    Serial.println("pin 13");
+  }
+  else if (PINB & 0b00010000) { //if pin 12 (PB4) is high 
+    turn_right();
+    Serial.println("pin 12");
+  }
 } 
 
 int main(void){
@@ -43,49 +59,19 @@ int main(void){
   Serial.begin(9600);
 
   while(1){
-    //drive_forward();
-    //_delay_ms(1400); //~1ft
-    //_delay_ms(200); // 1 in
-    //drive_forward();
-    //_delay_ms(200); //~1ft
-    //turn_right();
-    //_delay_ms(750); ~90 deg
-    stop_robot();
-    _delay_ms(11000);
-    if(startcolor == color) {
-      if(stepp == 1) drive_forward();
-      if(stepp == 2) drive_forward();
-    }
-    else if(color == 4) {
-      if(stepp == 1) {
-        stepp = 2;
-        stop_robot();
-        drive_backward();
-        _delay_ms(300);
-        turn_left();
-        _delay_ms(deg9 * 10);
-         stop_robot();
-      }
-      if(stepp == 2) {
-        turn_left();
-        _delay_ms(deg9*3);
-         stop_robot();
-      }
-
-    }
-    else if(othercolor == color) {
+    
       stop_robot();
       _delay_ms(300);
-      turn_left();
-      _delay_ms(750);
+      drive_forward();
+      _delay_ms(1400); //~1ft
       stop_robot();
-      //drive_forward();
-      //_delay_ms(2*1400); //~1ft
-      //turn_left();
-      //_delay_ms(8*deg9);
-      _delay_ms(15000);
-      
-    }  
+      _delay_ms(200); // 1 in
+      drive_forward();
+      _delay_ms(200); //~1ft
+      //turn_right();
+      //_delay_ms(750); ~90 deg
+      stop_robot();
+      _delay_ms(11000);
   }
 }
 
@@ -178,44 +164,6 @@ int turn_left(void){
       OCR2A = 0;
       OCR2B = 0;
       OCR0B = 255;
-}
-
-int stop_robot(void){
-  // stop both wheels
-      OCR0A = 128;
-      OCR2A = 128;
-      OCR2B = 128;
-      OCR0B = 128;
-}
-
-int drive_forward(void){
-      OCR0A = 0;
-      OCR2A = 0;
-      OCR2B = 0;
-      OCR0B = 0;
-}
-
-int drive_backward(void){
-      OCR0A = 0;
-      OCR2A = 0;
-      OCR2B = 0;
-      OCR0B = 0;
-}
-
-int turn_right(void){
-  // spin left wheel backward, right wheel forward
-      OCR0A = 128 - 1275/SPEED;
-      OCR2A = 128 + 1275/SPEED;
-      OCR2B = 128 + 1275/SPEED;
-      OCR0B = 128 - 1275/SPEED;
-}
-
-int turn_left(void){
-  // spin right wheel backward, left wheel forward
-      OCR0A = 128 + 1275/SPEED;
-      OCR2A = 128 - 1275/SPEED;
-      OCR2B = 128 - 1275/SPEED;
-      OCR0B = 128 + 1275/SPEED;
 }
 
 int stop_robot(void){
