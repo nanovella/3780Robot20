@@ -7,7 +7,7 @@
 #define QTIRpin 12
 #define QTILpin 13
 #define SPEED 80
-#define deg9 75
+#define deg9 55
 
 #define yLTHRESH 16
 #define yUTHRESH 29
@@ -43,15 +43,9 @@ int main(void){
   Serial.begin(9600);
 
   while(1){
-    //drive_forward();
-    //_delay_ms(1400); //~1ft
-    //_delay_ms(200); // 1 in
-    //drive_forward();
-    //_delay_ms(200); //~1ft
-    //turn_right();
-    //_delay_ms(750); ~90 deg
-    stop_robot();
-    _delay_ms(11000);
+    checkColor();
+    Serial.println("Color");
+    Serial.println(color);
     if(startcolor == color) {
       if(stepp == 1) drive_forward();
       if(stepp == 2) drive_forward();
@@ -64,27 +58,32 @@ int main(void){
         _delay_ms(300);
         turn_left();
         _delay_ms(deg9 * 10);
-         stop_robot();
+        stop_robot();
       }
       if(stepp == 2) {
         turn_left();
         _delay_ms(deg9*3);
-         stop_robot();
+        stop_robot();
       }
 
     }
     else if(othercolor == color) {
-      stop_robot();
-      _delay_ms(300);
-      turn_left();
-      _delay_ms(750);
-      stop_robot();
-      //drive_forward();
-      //_delay_ms(2*1400); //~1ft
-      //turn_left();
-      //_delay_ms(8*deg9);
-      _delay_ms(15000);
-      
+      if(stepp == 2) {
+        _delay_ms(500);
+        stop_robot();
+        _delay_ms(300);
+        turn_left();
+        _delay_ms(deg9 * 10);
+        stop_robot();
+        drive_forward();
+        _delay_ms(3*1400); //~1ft
+        turn_left();
+        _delay_ms(8*deg9);
+        drive_forward();
+        _delay_ms(1*1400);
+        stop_robot();
+        _delay_ms(15000);
+      }     
     }  
   }
 }
@@ -105,7 +104,6 @@ void calibrateColor() {
 }
 
 void checkColor() {
-    
     getColor();
     if (yLTHRESH<period && period<yUTHRESH) { //checks for some color 
       color = 2;
@@ -116,8 +114,6 @@ void checkColor() {
     else if (eLTHRESH<period && period<eUTHRESH) { //checks for some color 
       color = 4;
     }
-    _delay_ms(195);
-    Serial.println(color);    
 }
 
 void initColor(){ 
@@ -150,6 +146,7 @@ void getColor(){
 } 
 
 int drive_forward(void){
+      Serial.println("f");
       OCR0A = 0;
       OCR2A = 0;
       OCR2B = 0;
@@ -158,10 +155,10 @@ int drive_forward(void){
 }
 
 int drive_backward(void){
-      OCR0A = 0;
-      OCR2A = 0;
-      OCR2B = 0;
-      OCR0B = 0;
+      OCR0A = 255;
+      OCR2A = 255;
+      OCR2B = 255;
+      OCR0B = 255;
 }
 
 int turn_right(void){
@@ -178,44 +175,6 @@ int turn_left(void){
       OCR2A = 0;
       OCR2B = 0;
       OCR0B = 255;
-}
-
-int stop_robot(void){
-  // stop both wheels
-      OCR0A = 128;
-      OCR2A = 128;
-      OCR2B = 128;
-      OCR0B = 128;
-}
-
-int drive_forward(void){
-      OCR0A = 0;
-      OCR2A = 0;
-      OCR2B = 0;
-      OCR0B = 0;
-}
-
-int drive_backward(void){
-      OCR0A = 0;
-      OCR2A = 0;
-      OCR2B = 0;
-      OCR0B = 0;
-}
-
-int turn_right(void){
-  // spin left wheel backward, right wheel forward
-      OCR0A = 128 - 1275/SPEED;
-      OCR2A = 128 + 1275/SPEED;
-      OCR2B = 128 + 1275/SPEED;
-      OCR0B = 128 - 1275/SPEED;
-}
-
-int turn_left(void){
-  // spin right wheel backward, left wheel forward
-      OCR0A = 128 + 1275/SPEED;
-      OCR2A = 128 - 1275/SPEED;
-      OCR2B = 128 - 1275/SPEED;
-      OCR0B = 128 + 1275/SPEED;
 }
 
 int stop_robot(void){
